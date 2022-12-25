@@ -5,5 +5,6 @@
 ## Dependencies  🗃️:
 - [Nerd Font](https://github.com/ryanoasis/nerd-fonts/tree/master/patched-fonts/Iosevka)
 
-## Note  🗒️:
+## Notes  🗒️:
 - At the moment sctimer only works on Linux, but later it will be possible to use it on Windows.
+- The scrambles will be improved later.
