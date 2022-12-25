@@ -18,15 +18,15 @@ std::array<std::string, 5> SettingsArray;
 std::string colors[5] = {"94", "93", "92", "95", "97"};
 
 std::array<std::string, 5> InitializeSettingsArray(){
-	std::ifstream SettingsFile("config/timer.conf");
+	std::ifstream SettingsFile("timer/config/timer.conf");
 
 	int i = 0;
 	
 	if(!SettingsFile.is_open()){
-		std::ofstream CreateSettingsFile("config/timer.conf", std::ofstream::app);
+		std::ofstream CreateSettingsFile("timer/config/timer.conf", std::ofstream::app);
 		CreateSettingsFile<<"PB =            95\nNormalSolve =   94\nDuringSolve =   97\nShowKeys =      true\nInspection =    false";
 		CreateSettingsFile.close();
-		SettingsFile.open("config/timer.conf");
+		SettingsFile.open("timer/config/timer.conf");
 	}
 	
 	while(SettingsFile.eof()==0 && i<=4){
@@ -42,8 +42,8 @@ std::array<std::string, 5> InitializeSettingsArray(){
 void ChangeValueOfSettings(){
 	int NumberLine = 0;
 
-	std::ifstream ReadOldFile("config/timer.conf");
-	std::ofstream WriteNewFile("config/ProvisionalTimer.conf");
+	std::ifstream ReadOldFile("timer/config/timer.conf");
+	std::ofstream WriteNewFile("timer/config/ProvisionalTimer.conf");
 	
 	if(ChosenOption > 2){
 		std::string line;
@@ -58,7 +58,7 @@ void ChangeValueOfSettings(){
 			WriteNewFile<<line<<"\n";
 			NumberLine++;
 		}
-		rename("config/ProvisionalTimer.conf", "config/timer.conf");
+		rename("timer/config/ProvisionalTimer.conf", "timer/config/timer.conf");
 			
 		ReadOldFile.close();
 		WriteNewFile.close();
@@ -84,7 +84,7 @@ void ChangeValueOfSettings(){
 		ReadOldFile.close();
 		WriteNewFile.close();
 
-		rename("config/ProvisionalTimer.conf", "config/timer.conf");
+		rename("timer/config/ProvisionalTimer.conf", "timer/config/timer.conf");
 	}
 }
 

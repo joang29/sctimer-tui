@@ -10,10 +10,10 @@ std::array<std::string,4> DetermineStatics();
 float NumberToTime(float);
 
 std::array<std::string, 4> DetermineStatics(){
-	std::ifstream StaticsFile("config/statics.txt");
+	std::ifstream StaticsFile("timer/config/statics.txt");
 	
 	if(!StaticsFile.is_open()){
-		std::ofstream WriteStaticsFile("config/statics.txt", std::ofstream::app);
+		std::ofstream WriteStaticsFile("timer/config/statics.txt", std::ofstream::app);
 		
 		WriteStaticsFile<<"PB =          --\nBestAo5 =     --\nBestAo12 =    --\nBestAo50 =    --\n";
 		WriteStaticsFile.close();
@@ -36,10 +36,10 @@ std::array<std::string, 4> DetermineStatics(){
 }
 
 std::array<double,4> SumAverage(){
-	std::ifstream TimesFile("config/times.txt");
+	std::ifstream TimesFile("timer/config/times.txt");
 
 	if(!TimesFile.is_open()){
-		std::ofstream {"config/times.txt"};
+		std::ofstream {"timer/config/times.txt"};
 		TimesFile.close();
 		
 		return {0.0,0.0,0.0,0.0};
@@ -73,7 +73,7 @@ std::array<double,4> SumAverage(){
 }
 
 void ChangePB(std::array<std::string,4> BestTimes){
-	std::ofstream NewFile("config/NewFileStatics.conf");
+	std::ofstream NewFile("timer/config/NewFileStatics.conf");
 	
 	for(int i = 0; i<4; i++){
 		if(BestTimes[i] != "--" && BestTimes[i] != "0.000000"){
@@ -83,7 +83,7 @@ void ChangePB(std::array<std::string,4> BestTimes){
 			ss<<std::fixed<<std::setprecision(2)<<time;
 			BestTimes[i] = ss.str();
 			
-			if(stof(BestTimes[i]) >= 1000) BestTimes[i].insert(2, ":");
+			if(stof(BestTimes[i]) >= 1000) BestTimes[i].insert(2, ":");		
 			else if(stof(BestTimes[i]) >= 100) BestTimes[i].insert(1, ":");
 		}else BestTimes[i] = "--";
 	}
@@ -93,7 +93,7 @@ void ChangePB(std::array<std::string,4> BestTimes){
 	NewFile<<"BestAo12 =    "<<BestTimes[2]<<"\n";
 	NewFile<<"BestAo50 =    "<<BestTimes[3]<<"\n";
 		
-	std::rename("config/NewFileStatics.conf", "config/statics.txt");
+	std::rename("timer/config/NewFileStatics.conf", "timer/config/statics.txt");
 
 	NewFile.close();
 }

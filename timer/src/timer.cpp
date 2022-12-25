@@ -121,7 +121,7 @@ void ScrambleGenerator(){
 }
 
 void SaveTimes(int milliseconds, int seconds, int minutes){
-	std::ofstream TimeFile("config/times.txt", std::ofstream::app);
+	std::ofstream TimeFile("timer/config/times.txt", std::ofstream::app);
 	if(milliseconds < 10) milliseconds *= 10;
 	if(minutes >= 1){
 		if(seconds <= 9) TimeFile<<minutes<<":0"<<seconds<<"."<<milliseconds<<"\n";
