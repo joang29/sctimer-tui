@@ -6,7 +6,10 @@
 //timer.cpp
 void StartTimer();
 void ScrambleGenerator();
+void options(std::string);
+void ChangeScreenAfterSolveValue();
 bool FunctionTimerIsOn();
+bool ReturnScreenAfterSolve();
 
 //keys.cpp
 void keys();

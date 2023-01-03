@@ -1,3 +1,6 @@
+#include<iostream>
+#include <algorithm>
+#include <iterator>
 #include<string>
 #include<array>
 #include<iomanip>
@@ -47,27 +50,76 @@ std::array<double,4> SumAverage(){
 	
 	std::string line = "";
 	std::vector <double> average;
+	std::vector <int> SolveDNF;
 	int NumberLine = 0;
 
 	while(TimesFile.eof()==0){
 		getline(TimesFile, line);
 		if(line != ""){
 			if(line.find(":") != std::string::npos) line.replace(line.find(":"), 1, ""); 
-			average.push_back(stod(line));
+			if(line == "DNF") SolveDNF.push_back(NumberLine);
+			else average.push_back(stod(line));
 		}
 		NumberLine++;
 	}
-	
-	double sumAo5 = 0, sumAo12 = 0, sumAo50 = 0;
 
-	if(NumberLine > 5) sumAo5 = std::accumulate(average.begin()+NumberLine-6, average.end(), 0.0)/5;
-	else return {0, 0, 0, NumberLine*1.0};
+	double sumAo5 = 0, sumAo12 = 0, sumAo50 = 0;
+	int NumberOfDNFao5 = 0, NumberOfDNFao12 = 0, NumberOfDNFao50 = 0;
 	
-	if(NumberLine > 12) sumAo12 = std::accumulate(average.begin()+NumberLine-13, average.end(), 0.0)/12;
-	else return {sumAo5, 0, 0, NumberLine*1.0}; 
+	if(SolveDNF.size() != 0){
+		for(int line : SolveDNF){
+			if(line > NumberLine-6){
+				NumberOfDNFao5++;
+				NumberOfDNFao12++;
+				NumberOfDNFao50++;
+			}else if(line > NumberLine-13){
+				NumberOfDNFao12++;
+				NumberOfDNFao50++;
+			}else if(line > NumberLine-51) NumberOfDNFao50++;
+		}
+	}
+
+	if(NumberLine > 5){
+		if(NumberOfDNFao5 == 1){ 	
+			std::vector <double>::iterator BestSolve = std::min_element(average.end()-5, average.end());
+			sumAo5 = (std::accumulate(average.end()-4, average.end(), 0.0) - *BestSolve)/3;
+		
+		}else if(NumberOfDNFao5 >= 2) sumAo5 = -1;
+		
+		else sumAo5 = std::accumulate(average.end()-5, average.end(), 0.0)/5;
 	
-	if(NumberLine > 50) sumAo50 = std::accumulate(average.begin()+NumberLine-51, average.end(), 0.0)/50;
-	else return {sumAo5, sumAo12, 0, NumberLine*1.0};
+	}else return {0, 0, 0, NumberLine*1.0};
+	
+	if(NumberLine > 12){
+		if(NumberOfDNFao12 == 1){ 		
+			std::vector <double>::iterator BestSolve = std::min_element(average.end()-12, average.end());
+			sumAo12 = (std::accumulate(average.end()-11, average.end(), 0.0) - *BestSolve)/10;
+		
+		}else if(NumberOfDNFao12 >= 2) sumAo12 = -1;
+		
+		else sumAo12 = std::accumulate(average.end()-12, average.end(), 0.0)/12;
+	
+	}else return {sumAo5, 0, 0, NumberLine*1.0}; 
+	
+	if(NumberLine > 50){
+		if(NumberOfDNFao50 > 0 && NumberOfDNFao50 < 4){ 
+			std::vector <std::vector<double>::iterator> BestSolves;
+			
+			for(int i = 0; i < NumberOfDNFao50; i++){
+				BestSolves.push_back(std::min_element(average.begin()+NumberLine-49-i, average.end()));
+				average.erase(std::find(average.begin(), average.end(), *BestSolves[i]));
+			}
+			
+			if(NumberLine >= NumberOfDNFao50 + 50) sumAo50 = std::accumulate(average.begin()+NumberLine-49-NumberOfDNFao50, average.end(), 0.0);
+			else if(NumberLine == 51) sumAo50 = std::accumulate(average.begin(), average.end(), 0.0);
+			else if(NumberLine == 52) sumAo50 = std::accumulate(average.begin()+1, average.end(), 0.0);
+			
+			sumAo50 /= (50-NumberOfDNFao50*2);
+	
+		}else if(NumberOfDNFao50 >= 4) sumAo50 = -1;
+		
+		else sumAo50 = std::accumulate(average.end()-50, average.end(), 0.0)/50;
+	}
 	
 	return {sumAo5, sumAo12, sumAo50, NumberLine*1.0};
 }
@@ -107,13 +159,13 @@ float NumberToTime(float average){
 		average += 100;
 		average -= 60;
 	}
-	if(average >= 1000 && stof(std::to_string(average).substr(2, std::to_string(average).find("."))) >= 60){
+	/*if(average >= 1000 && stof(std::to_string(average).substr(2, std::to_string(average).find("."))) >= 60){
 		average += 100;
 		average -= 60;	
 
-	}else if(average >= 100 && stof(std::to_string(average).substr(1,std::to_string(average).find(":"))) >= 60){
+	}else if(average >= 100 && stof(std::to_string(average).substr(1,2)) >= 60){
 		average += 100;
 		average -= 60;
-	}
+	}*/
 	return average;
 }

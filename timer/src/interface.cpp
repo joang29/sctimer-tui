@@ -8,9 +8,11 @@
 std::string ReturnActualInterface();
 
 struct winsize WindowSize;
-std::string ActualInterface = "timer";
+std::string ActualInterface = "";
 
 void interface(std::string options){
+	ChangeScreenAfterSolveValue();
+
 	system("clear");
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &WindowSize);
 	std::cout<<"\033[1;0f"<<std::setw(WindowSize.ws_col/2.1);
@@ -54,7 +56,7 @@ void interface(std::string options){
 		std::array<std::string, 4> sumAverageArrayString;  
 
 		for(int i = 0; i < 3; i++){
-			if(sumAverageArray[i] != 0){
+			if(sumAverageArray[i] != 0 && sumAverageArray[i] != -1){
 				sumAverageArray[i] = NumberToTime(sumAverageArray[i]);
 
 				std::stringstream ss;
@@ -64,15 +66,17 @@ void interface(std::string options){
 				if(sumAverageArray[i] >= 1000)	sumAverageArrayString[i].insert(2,":");					
 				else if(sumAverageArray[i] >= 100) sumAverageArrayString[i].insert(1,":");
 				
-			}else sumAverageArray[i] = 0;
-		}
-
-		sumAverageArray[0] != 0 ? std::cout<<"\r\t\tActual Ao5:   "<<sumAverageArrayString[0]<<std::endl : std::cout<<"\r\t\tActual Ao5:   --"<<std::endl;		
-		sumAverageArray[1] != 0 ? std::cout<<"\r\t\tActual Ao12:   "<<sumAverageArrayString[1]<<std::endl : std::cout<<"\r\t\tActual Ao12:   --"<<std::endl;
-		sumAverageArray[2] != 0 ? std::cout<<"\r\t\tActual Ao50:   "<<sumAverageArrayString[2]<<std::endl : std::cout<<"\r\t\tActual Ao50:   --"<<std::endl;
+			}else if(sumAverageArray[i] == 0) sumAverageArrayString[i] = "--";
+			else if(sumAverageArray[i] == -1) sumAverageArrayString[i] = "DNF";
+	}
+	
+		std::cout<<"\r\t\tActual Ao5:   "<<sumAverageArrayString[0]<<std::endl;		
+		std::cout<<"\r\t\tActual Ao12:   "<<sumAverageArrayString[1]<<std::endl;
+		std::cout<<"\r\t\tActual Ao50:   "<<sumAverageArrayString[2]<<std::endl;
 
 	}else if(options == "settings"){
 		ActualInterface = "settings";
+
 		int ChosenOption = ReturnChosenOption();
 		std::string MessageSettingsArray[5];
 		
