@@ -1,10 +1,17 @@
+#ifdef _WIN32
+	#include<conio.h>
+#endif
 #include<string>
 #include "functions.h"
 
 void keys(){	
 	while(true){
-		char KeyPressed = getchar();
-			
+		#ifdef _WIN32 
+			char KeyPressed = getch();
+		#elif __linux__
+			char KeyPressed = getchar();
+		#endif
+
 		switch(KeyPressed){
 			case 'q':
 			case 'Q': if(!FunctionTimerIsOn()) interface("timer");
@@ -20,7 +27,11 @@ void keys(){
 			
 			case 'x':
 			case 'X': 
-				  system("stty cooked | clear");
+				  #ifdef __linux__ 
+				  		system("stty cooked | clear"); 
+				  #elif _WIN32
+				  		system("cls");
+				  #endif
 				  exit(0);
 			break;
 			

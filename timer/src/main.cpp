@@ -2,7 +2,10 @@
 #include "functions.h"
 
 int main(){
-	system("stty raw");
+
+	#ifdef __linux__
+		system("stty raw");
+	#endif
 
 	interface("timer");
 	

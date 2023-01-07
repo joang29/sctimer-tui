@@ -1,22 +1,28 @@
-#include<iostream>
-#include <algorithm>
-#include <iterator>
+#include<algorithm>
+#include<iterator>
 #include<string>
 #include<array>
 #include<iomanip>
 #include<vector>
+#include<stdio.h>
 #include<numeric>
 #include<fstream>
+
+#ifdef _WIN32
+	std::string DirectorySeparator = "\\";
+#elif __linux__
+	std::string DirectorySeparator = "/";
+#endif
 
 std::array<double,4> SumAverage();
 std::array<std::string,4> DetermineStatics();
 float NumberToTime(float);
 
 std::array<std::string, 4> DetermineStatics(){
-	std::ifstream StaticsFile("timer/config/statics.txt");
+	std::ifstream StaticsFile("timer" + DirectorySeparator + "config" + DirectorySeparator + "statics.txt");
 	
 	if(!StaticsFile.is_open()){
-		std::ofstream WriteStaticsFile("timer/config/statics.txt", std::ofstream::app);
+		std::ofstream WriteStaticsFile("timer" + DirectorySeparator + "config" + DirectorySeparator + "statics.txt", std::ofstream::app);
 		
 		WriteStaticsFile<<"PB =          --\nBestAo5 =     --\nBestAo12 =    --\nBestAo50 =    --\n";
 		WriteStaticsFile.close();
@@ -39,10 +45,10 @@ std::array<std::string, 4> DetermineStatics(){
 }
 
 std::array<double,4> SumAverage(){
-	std::ifstream TimesFile("timer/config/times.txt");
+	std::ifstream TimesFile("timer" + DirectorySeparator + "config" + DirectorySeparator + "times.txt");
 
 	if(!TimesFile.is_open()){
-		std::ofstream {"timer/config/times.txt"};
+		std::ofstream {"timer" + DirectorySeparator + "config" + DirectorySeparator + "times.txt"};
 		TimesFile.close();
 		
 		return {0.0,0.0,0.0,0.0};
@@ -125,7 +131,7 @@ std::array<double,4> SumAverage(){
 }
 
 void ChangePB(std::array<std::string,4> BestTimes){
-	std::ofstream NewFile("timer/config/NewFileStatics.conf");
+	std::ofstream NewFile("timer" + DirectorySeparator + "config" + DirectorySeparator +"NewFileStatics.txt");
 	
 	for(int i = 0; i<4; i++){
 		if(BestTimes[i] != "--" && BestTimes[i] != "0.000000"){
@@ -144,10 +150,15 @@ void ChangePB(std::array<std::string,4> BestTimes){
 	NewFile<<"BestAo5 =     "<<BestTimes[1]<<"\n";
 	NewFile<<"BestAo12 =    "<<BestTimes[2]<<"\n";
 	NewFile<<"BestAo50 =    "<<BestTimes[3]<<"\n";
-		
-	std::rename("timer/config/NewFileStatics.conf", "timer/config/statics.txt");
-
+	
 	NewFile.close();
+
+	#ifdef _WIN32
+		remove("timer\\config\\statics.txt");
+		rename("timer\\config\\NewFileStatics.txt", "timer\\config\\statics.txt");
+	#elif __linux__
+		rename("timer/config/NewFileStatics.txt", "timer/config/statics.txt");
+	#endif
 }
 
 float NumberToTime(float average){
@@ -159,13 +170,13 @@ float NumberToTime(float average){
 		average += 100;
 		average -= 60;
 	}
-	/*if(average >= 1000 && stof(std::to_string(average).substr(2, std::to_string(average).find("."))) >= 60){
+	if(average >= 1000 && stof(std::to_string(average).substr(2, std::to_string(average).find("."))) >= 60){
 		average += 100;
 		average -= 60;	
 
 	}else if(average >= 100 && stof(std::to_string(average).substr(1,2)) >= 60){
 		average += 100;
 		average -= 60;
-	}*/
+	}
 	return average;
 }

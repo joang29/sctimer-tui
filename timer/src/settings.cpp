@@ -18,15 +18,21 @@ std::array<std::string, 5> SettingsArray;
 std::string colors[5] = {"94", "93", "92", "95", "97"};
 
 std::array<std::string, 5> InitializeSettingsArray(){
-	std::ifstream SettingsFile("timer/config/timer.conf");
+	#ifdef _WIN32
+	std::string DirectorySeparator = "\\";
+	#elif __linux__
+	std::string DirectorySeparator = "/";
+	#endif
+
+	std::ifstream SettingsFile("timer" + DirectorySeparator + "config" + DirectorySeparator + "timer.conf");
 
 	int i = 0;
 	
 	if(!SettingsFile.is_open()){
-		std::ofstream CreateSettingsFile("timer/config/timer.conf", std::ofstream::app);
+		std::ofstream CreateSettingsFile("timer"+ DirectorySeparator + "config" + DirectorySeparator + "timer.conf", std::ofstream::app);
 		CreateSettingsFile<<"PB =            95\nNormalSolve =   94\nDuringSolve =   97\nShowKeys =      true\nInspection =    false";
 		CreateSettingsFile.close();
-		SettingsFile.open("timer/config/timer.conf");
+		SettingsFile.open("timer" + DirectorySeparator + "config" + DirectorySeparator + "timer.conf");
 	}
 	
 	while(SettingsFile.eof()==0 && i<=4){
@@ -40,11 +46,17 @@ std::array<std::string, 5> InitializeSettingsArray(){
 }
 
 void ChangeValueOfSettings(){
+	#ifdef _WIN32
+		std::string DirectorySeparator = "\\";
+	#elif __linux__
+		std::string DirectorySeparator = "/";
+	#endif
+
 	int NumberLine = 0;
 
-	std::ifstream ReadOldFile("timer/config/timer.conf");
-	std::ofstream WriteNewFile("timer/config/ProvisionalTimer.conf");
-	
+	std::ifstream ReadOldFile("timer" + DirectorySeparator + "config" + DirectorySeparator + "timer.conf");
+	std::ofstream WriteNewFile("timer" + DirectorySeparator + "config" + DirectorySeparator + "ProvisionalTimer.conf");
+
 	if(ChosenOption > 2){
 		std::string line;
 	
@@ -55,14 +67,19 @@ void ChangeValueOfSettings(){
 				if(line.find("true") != std::string::npos) line.replace(line.find("true"), line.length(), "false"); 
 				else line.replace(line.find("false"), line.length(), "true");
 			}
-			WriteNewFile<<line<<"\n";
+			if(line != "") WriteNewFile<<line<<"\n";
 			NumberLine++;
 		}
-		rename("timer/config/ProvisionalTimer.conf", "timer/config/timer.conf");
-			
 		ReadOldFile.close();
 		WriteNewFile.close();
 
+		#ifdef _WIN32
+			remove("timer\\config\\timer.conf");
+			rename("timer\\config\\ProvisionalTimer.conf", "timer\\config\\timer.conf");
+		#elif __linux__
+			rename("timer/config/ProvisionalTimer.conf", "timer/config/timer.conf");
+		#endif
+		
 		interface("settings");
 	}
 	else if(ChosenOption <= 2){
@@ -77,14 +94,19 @@ void ChangeValueOfSettings(){
 				if(*index != "97") line.replace(line.find(SettingsArray[ChosenOption]), line.length(), colors[distance(colors, index)+1]); 
 				else line.replace(line.find(SettingsArray[ChosenOption]), line.length(), "94");
 			}
-			WriteNewFile<<line<<"\n";
+			if(line != "") WriteNewFile<<line<<"\n";
 			NumberLine++;	
 		}
 		
 		ReadOldFile.close();
 		WriteNewFile.close();
 
-		rename("timer/config/ProvisionalTimer.conf", "timer/config/timer.conf");
+		#ifdef _WIN32
+			remove("timer\\config\\timer.conf");
+			rename("timer\\config\\ProvisionalTimer.conf", "timer\\config\\timer.conf");
+		#elif __linux__
+			std::rename("timer/config/ProvisionalTimer.conf", "timer/config/timer.conf");
+		#endif
 	}
 }
 

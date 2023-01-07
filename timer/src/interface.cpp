@@ -1,42 +1,64 @@
 #include<iostream>
 #include<string>
-#include<sys/ioctl.h>
 #include<iomanip>
 #include<unistd.h>
 #include "functions.h"
 
-std::string ReturnActualInterface();
+#ifdef _WIN32
+	#define WIN32_LEAN_AND_MEAN
+	#include<Windows.h>
+#elif __linux__
+	#include<sys/ioctl.h>
+#endif
 
-struct winsize WindowSize;
+std::string ReturnActualInterface();
 std::string ActualInterface = "";
 
 void interface(std::string options){
 	ChangeScreenAfterSolveValue();
 
-	system("clear");
-	ioctl(STDOUT_FILENO, TIOCGWINSZ, &WindowSize);
-	std::cout<<"\033[1;0f"<<std::setw(WindowSize.ws_col/2.1);
+
+	int NumberOfColumns, NumberOfRows;
+	#ifdef _WIN32
+		system("cls");
+
+		CONSOLE_SCREEN_BUFFER_INFO ScreenInfo;
+    	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &ScreenInfo);
+
+		NumberOfColumns = (ScreenInfo.srWindow.Right - ScreenInfo.srWindow.Left+1);
+		NumberOfRows = (ScreenInfo.srWindow.Bottom - ScreenInfo.srWindow.Top+1);
+			
+	#elif __linux__
+		system("clear");
+
+		struct winsize WindowSize;
+		ioctl(STDOUT_FILENO, TIOCGWINSZ, &WindowSize);
+		NumberOfRows = WindowSize.ws_row;
+		NumberOfColumns = WindowSize.ws_col;
+	#endif
+	std::cout<<"\033[2;0f"<<std::setw(NumberOfColumns/2.1);
 
 	if(ReturnShowKeysValue() == "true"){
 		std::cout<<"祥 Timer (Q)     ";
 		std::cout<<"  Statics (E)     ";
 		std::cout<<"漣 Settings (R)";
 		
-		std::cout<<"\033["<<WindowSize.ws_row<<";"<<WindowSize.ws_col-12<<"f";
+		std::cout<<"\033["<<NumberOfRows<<";"<<NumberOfColumns-12<<"f";
+		
 		std::cout<<"  close (X)";
 	}else{
 		std::cout<<"祥 Timer         ";    
 		std::cout<<"  Statics         ";
 		std::cout<<"漣 Settings    ";
 		
-		std::cout<<"\033["<<WindowSize.ws_row<<";"<<WindowSize.ws_col-12<<"f";
+		std::cout<<"\033["<<NumberOfRows<<";"<<NumberOfColumns-12<<"f";
 		std::cout<<"  close    ";	
 	}
 	
 	if(options == "timer"){
 		ActualInterface = "timer";
 
-		std::cout<<"\033["<<WindowSize.ws_row/2<<";"<<"0f"<<std::setw(WindowSize.ws_col/2+19);
+		std::cout<<"\033["<<NumberOfRows/2<<";"<<"0f"<<std::setw(NumberOfColumns/2+19);
 		std::cout<<"Press space when you start cubing\n";
 		
 		ScrambleGenerator();
@@ -93,7 +115,7 @@ void interface(std::string options){
 		for(int i = 0; i<=4; i++) 
 			ChosenOption == i ? std::cout<<"\r\t      > "<<MessageSettingsArray[i]<<std::endl : std::cout<<"\r\t\t"<<MessageSettingsArray[i]<<std::endl;
 		
-		std::cout<<"\033["<<WindowSize.ws_row<<";0f";
+		std::cout<<"\033["<<NumberOfRows<<";0f";
 
 		std::cout<<"\rUse 'W' and 'S' to move through the settings and space to change settings";
 	}
