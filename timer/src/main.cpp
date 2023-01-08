@@ -13,8 +13,7 @@ int main(){
 		if(stat((homedir + "/.config/sctimer-cli").c_str(), &CheckIfDirExists) != 0) mkdir((homedir + "/.config/sctimer-cli").c_str(), 0777);
 	#elif _WIN32
 		std::string appdata = getenv("APPDATA");
-		
-		if(stat((appdata + "../Local/sctimer-cli" ).c_str(), &CheckIfDirExists) != 0) mkdir((appdata + "../Local/sctimer-cli").c_str());
+    	if(stat((appdata + "/../Local/sctimer-cli").c_str(), &CheckIfDirExists) != 0) mkdir((appdata + "/../Local/sctimer-cli").c_str());
 	#endif
 	
 	interface("timer");

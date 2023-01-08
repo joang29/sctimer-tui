@@ -19,10 +19,8 @@ std::string colors[5] = {"94", "93", "92", "95", "97"};
 
 std::array<std::string, 5> InitializeSettingsArray(){
 	#ifdef _WIN32
-		std::string DirectorySeparator = "\\";
-		std::string ConfigDirectoryPath = std::string(getenv("APPDATA")) + "..\\Local\\sctimer-cli\\";
+		std::string ConfigDirectoryPath = std::string(getenv("APPDATA")) + "/../Local/sctimer-cli/";
 	#elif __linux__
-		std::string DirectorySeparator = "/";
 		std::string ConfigDirectoryPath = std::string(getenv("HOME")) + "/.config/sctimer-cli/";
 	#endif
 
@@ -50,10 +48,8 @@ std::array<std::string, 5> InitializeSettingsArray(){
 
 void ChangeValueOfSettings(){
 	#ifdef _WIN32
-		std::string DirectorySeparator = "\\";
-		std::string ConfigDirectoryPath = std::string(getenv("APPDATA")) + "..\\Local\\sctimer-cli\\";
+		std::string ConfigDirectoryPath = std::string(getenv("APPDATA")) + "/../Local/sctimer-cli/";
 	#elif __linux__
-		std::string DirectorySeparator = "/";
 		std::string ConfigDirectoryPath = std::string(getenv("HOME")) + "/.config/sctimer-cli/";
 	#endif
 
@@ -80,7 +76,7 @@ void ChangeValueOfSettings(){
 
 		#ifdef _WIN32
 			remove((ConfigDirectoryPath + "timer.conf").c_str());
-			rename((ConfigDirectoryPath + "ProvisionalTimer.conf").c_str(), (ConfigDirectoryPath "timer.conf").c_str());
+			rename((ConfigDirectoryPath + "ProvisionalTimer.conf").c_str(), (ConfigDirectoryPath + "timer.conf").c_str());
 	
 		#elif __linux__
 			rename((ConfigDirectoryPath + "ProvisionalTimer.conf").c_str(), (ConfigDirectoryPath + "timer.conf").c_str());

@@ -9,10 +9,8 @@
 #include<fstream>
 
 #ifdef _WIN32
-	std::string DirectorySeparator = "\\";
-	std::string ConfigDirectoryPath = std::string(getenv("APPDATA")) + "..\\Local\\sctimer-cli\\";
+	std::string ConfigDirectoryPath = std::string(getenv("APPDATA")) + "/../Local/sctimer-cli/";
 #elif __linux__
-	std::string DirectorySeparator = "/";
 	std::string ConfigDirectoryPath = std::string(getenv("HOME")) + "/.config/sctimer-cli/";
 #endif
 
