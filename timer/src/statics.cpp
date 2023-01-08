@@ -10,8 +10,10 @@
 
 #ifdef _WIN32
 	std::string DirectorySeparator = "\\";
+	std::string ConfigDirectoryPath = std::string(getenv("APPDATA")) + "..\\Local\\sctimer-cli\\";
 #elif __linux__
 	std::string DirectorySeparator = "/";
+	std::string ConfigDirectoryPath = std::string(getenv("HOME")) + "/.config/sctimer-cli/";
 #endif
 
 std::array<double,4> SumAverage();
@@ -19,10 +21,10 @@ std::array<std::string,4> DetermineStatics();
 float NumberToTime(float);
 
 std::array<std::string, 4> DetermineStatics(){
-	std::ifstream StaticsFile("timer" + DirectorySeparator + "config" + DirectorySeparator + "statics.txt");
+	std::ifstream StaticsFile(ConfigDirectoryPath + "statics.txt");
 	
 	if(!StaticsFile.is_open()){
-		std::ofstream WriteStaticsFile("timer" + DirectorySeparator + "config" + DirectorySeparator + "statics.txt", std::ofstream::app);
+		std::ofstream WriteStaticsFile(ConfigDirectoryPath + "statics.txt", std::ofstream::app);
 		
 		WriteStaticsFile<<"PB =          --\nBestAo5 =     --\nBestAo12 =    --\nBestAo50 =    --\n";
 		WriteStaticsFile.close();
@@ -45,10 +47,10 @@ std::array<std::string, 4> DetermineStatics(){
 }
 
 std::array<double,4> SumAverage(){
-	std::ifstream TimesFile("timer" + DirectorySeparator + "config" + DirectorySeparator + "times.txt");
+	std::ifstream TimesFile(ConfigDirectoryPath + "times.txt");
 
 	if(!TimesFile.is_open()){
-		std::ofstream {"timer" + DirectorySeparator + "config" + DirectorySeparator + "times.txt"};
+		std::ofstream {ConfigDirectoryPath + "times.txt"};
 		TimesFile.close();
 		
 		return {0.0,0.0,0.0,0.0};
@@ -131,7 +133,7 @@ std::array<double,4> SumAverage(){
 }
 
 void ChangePB(std::array<std::string,4> BestTimes){
-	std::ofstream NewFile("timer" + DirectorySeparator + "config" + DirectorySeparator +"NewFileStatics.txt");
+	std::ofstream NewFile(ConfigDirectoryPath +"NewFileStatics.txt");
 	
 	for(int i = 0; i<4; i++){
 		if(BestTimes[i] != "--" && BestTimes[i] != "0.000000"){
@@ -154,11 +156,11 @@ void ChangePB(std::array<std::string,4> BestTimes){
 	NewFile.close();
 
 	#ifdef _WIN32
-		remove("timer\\config\\statics.txt");
-		rename("timer\\config\\NewFileStatics.txt", "timer\\config\\statics.txt");
+		remove((ConfigDirectoryPath + "statics.txt").c_str());
+		rename((ConfigDirectoryPath + "NewFileStatics.txt").c_str(), (ConfigDirectoryPath + "statics.txt").c_str());
 	#elif __linux__
-		rename("timer/config/NewFileStatics.txt", "timer/config/statics.txt");
-	#endif
+		rename((ConfigDirectoryPath + "NewFileStatics.txt").c_str(), (ConfigDirectoryPath + "statics.txt").c_str());
+		#endif
 }
 
 float NumberToTime(float average){

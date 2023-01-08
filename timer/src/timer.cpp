@@ -190,7 +190,13 @@ void ScrambleGenerator(){
 }
 
 void SaveTimes(int milliseconds, int seconds, int minutes){
-	std::ofstream TimeFile("timer/config/times.txt", std::ofstream::app);
+	#ifdef _WIN32
+		
+	#elif __linux__
+		std::string homedir = getenv("HOME");
+	#endif
+
+	std::ofstream TimeFile(homedir + "/.config/sctimer-cli/times.txt", std::ofstream::app);
 	if(milliseconds < 10) milliseconds *= 10;
 	if(minutes >= 1){
 		if(seconds <= 9) TimeFile<<minutes<<":0"<<seconds<<"."<<milliseconds<<"\n";
@@ -200,9 +206,15 @@ void SaveTimes(int milliseconds, int seconds, int minutes){
 
 void options(std::string OptionChosen){
 	ScreenAfterSolve = false;
+	
+	#ifdef _WIN32
+		
+	#elif __linux__
+		std::string homedir = getenv("HOME");
+	#endif
 
 	if(OptionChosen == "DNF"){
-		std::ofstream WriteFile("timer/config/times.txt", std::ofstream::app);	
+		std::ofstream WriteFile(homedir + "/.config/sctimer-cli/times.txt", std::ofstream::app);	
 		WriteFile<<"DNF"<<"\n";
 
 		std::cout<<"\033["<<NumberOfRows/2+2<<";0f"<<"\033[2K";
