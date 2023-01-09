@@ -1,3 +1,4 @@
+#include "functions.h"
 #include<algorithm>
 #include<iterator>
 #include<string>
@@ -19,10 +20,12 @@ std::array<std::string,4> DetermineStatics();
 float NumberToTime(float);
 
 std::array<std::string, 4> DetermineStatics(){
-	std::ifstream StaticsFile(ConfigDirectoryPath + "statics.txt");
+	std::string cube = ReturnCube() == "3x3" ? "3x3/statics_3x3.txt" : "2x2/statics_2x2.txt";
+
+	std::ifstream StaticsFile(ConfigDirectoryPath + cube);
 	
 	if(!StaticsFile.is_open()){
-		std::ofstream WriteStaticsFile(ConfigDirectoryPath + "statics.txt", std::ofstream::app);
+		std::ofstream WriteStaticsFile(ConfigDirectoryPath + cube, std::ofstream::app);
 		
 		WriteStaticsFile<<"PB =          --\nBestAo5 =     --\nBestAo12 =    --\nBestAo50 =    --\n";
 		WriteStaticsFile.close();
@@ -45,10 +48,13 @@ std::array<std::string, 4> DetermineStatics(){
 }
 
 std::array<double,4> SumAverage(){
-	std::ifstream TimesFile(ConfigDirectoryPath + "times.txt");
+	
+	std::string cube = ReturnCube() == "3x3" ? "3x3/times_3x3.txt" : "2x2/times_2x2.txt";
+
+	std::ifstream TimesFile(ConfigDirectoryPath + cube);
 
 	if(!TimesFile.is_open()){
-		std::ofstream {ConfigDirectoryPath + "times.txt"};
+		std::ofstream {ConfigDirectoryPath + cube};
 		TimesFile.close();
 		
 		return {0.0,0.0,0.0,0.0};
@@ -152,12 +158,14 @@ void ChangePB(std::array<std::string,4> BestTimes){
 	NewFile<<"BestAo50 =    "<<BestTimes[3]<<"\n";
 	
 	NewFile.close();
+	
+	std::string cube = ReturnCube() == "3x3" ? "3x3/statics_3x3.txt" : "2x2/statics_2x2.txt";
 
 	#ifdef _WIN32
-		remove((ConfigDirectoryPath + "statics.txt").c_str());
-		rename((ConfigDirectoryPath + "NewFileStatics.txt").c_str(), (ConfigDirectoryPath + "statics.txt").c_str());
+		remove((ConfigDirectoryPath + cube).c_str());
+		rename((ConfigDirectoryPath + "NewFileStatics.txt").c_str(), (ConfigDirectoryPath + cube).c_str());
 	#elif __linux__
-		rename((ConfigDirectoryPath + "NewFileStatics.txt").c_str(), (ConfigDirectoryPath + "statics.txt").c_str());
+		rename((ConfigDirectoryPath + "NewFileStatics.txt").c_str(), (ConfigDirectoryPath + cube).c_str());
 		#endif
 }
 

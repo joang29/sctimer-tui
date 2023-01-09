@@ -123,31 +123,32 @@ void InspectionTimer(std::array<std::string,3> colors){
 }
 
 void InitializeWindowSize(){
-		#ifdef _WIN32
-			CONSOLE_SCREEN_BUFFER_INFO ScreenInfo;
- 	   		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &ScreenInfo);
+	#ifdef _WIN32
+		CONSOLE_SCREEN_BUFFER_INFO ScreenInfo;
+		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &ScreenInfo);
 
-			NumberOfColumns = (ScreenInfo.srWindow.Right - ScreenInfo.srWindow.Left+1);
-			NumberOfRows = (ScreenInfo.srWindow.Bottom - ScreenInfo.srWindow.Top+1);
-		#elif __linux__
-			struct winsize WindowSize;
-			ioctl(STDOUT_FILENO, TIOCGWINSZ, &WindowSize);
+		NumberOfColumns = (ScreenInfo.srWindow.Right - ScreenInfo.srWindow.Left+1);
+		NumberOfRows = (ScreenInfo.srWindow.Bottom - ScreenInfo.srWindow.Top+1);
+	#elif __linux__
+		struct winsize WindowSize;
+		ioctl(STDOUT_FILENO, TIOCGWINSZ, &WindowSize);
 	
-			NumberOfRows = WindowSize.ws_row;
-			NumberOfColumns = WindowSize.ws_col;
-		#endif
+		NumberOfRows = WindowSize.ws_row;
+		NumberOfColumns = WindowSize.ws_col;
+	#endif
 }
 
 void ScrambleGenerator(){	
 	std::string moves[] = {"U", "D", "F", "B", "R", "L"};
 	std::string add[] = {"", "'", "2"};
 	
-	std::string scramble[25];
-	int MoveNumber[25];
-			
+	std::string scramble[ReturnCube() == "3x3" ? 25 : 9];
+	int ScrambleLength = sizeof(scramble) / sizeof(std::string);
+	int MoveNumber[ScrambleLength];
+		
 	InitializeWindowSize();
-
-	for(int i = 0; i<25; i++){
+		
+	for(int i = 0; i<ScrambleLength; i++){
 		MoveNumber[i] = rand() % 6;
 		scramble[i] = moves[MoveNumber[i]];
 		
@@ -177,8 +178,9 @@ void ScrambleGenerator(){
 		}
 		scramble[i].append(add[rand() % 3]);
 	}
-	if(NumberOfColumns/2 > 50){
-		std::cout<<"\033["<<NumberOfRows/2-3<<";0f"<<std::setw(NumberOfColumns/2-30);	
+	if(NumberOfColumns/2 > 50 || ReturnCube() == "2x2"){
+		ReturnCube() == "3x3" ? std::cout<<"\033["<<NumberOfRows/2-3<<";0f"<<std::setw(NumberOfColumns/2-30) : 
+					std::cout<<"\033["<<NumberOfRows/2-3<<";0f"<<std::setw(NumberOfColumns/2-9);	
 		for(std::string move : scramble) std::cout<<move<<" ";	
 	}else{
 		std::cout<<"\033["<<NumberOfRows/2-3<<";0f"<<std::setw(NumberOfColumns/2-12);
@@ -195,13 +197,18 @@ void SaveTimes(int milliseconds, int seconds, int minutes){
 	#elif __linux__
 		std::string ConfigDirectoryPath = std::string(getenv("HOME")) + "/.config/sctimer-cli/";
 	#endif
+	
+	std::string cube = ReturnCube() == "3x3" ? "3x3/times_3x3.txt" : "2x2/times_2x2.txt";
 
-	std::ofstream TimeFile(ConfigDirectoryPath + "times.txt", std::ofstream::app);
+	std::ofstream TimeFile(ConfigDirectoryPath + cube, std::ofstream::app);
+
 	if(milliseconds < 10) milliseconds *= 10;
 	if(minutes >= 1){
 		if(seconds <= 9) TimeFile<<minutes<<":0"<<seconds<<"."<<milliseconds<<"\n";
 		else TimeFile<<minutes<<":"<<seconds<<"."<<milliseconds<<"\n";
 	}else TimeFile<<seconds<<"."<<milliseconds<<"\n";
+	
+	TimeFile.close();
 }
 
 void options(std::string OptionChosen){
@@ -214,8 +221,11 @@ void options(std::string OptionChosen){
 	#endif
 
 	if(OptionChosen == "DNF"){
-		std::ofstream WriteFile(ConfigDirectoryPath + "times.txt", std::ofstream::app);	
+		std::string cube = ReturnCube() == "3x3" ? "3x3/times_3x3.txt" : "2x2/times_2x2.txt";
+
+		std::ofstream WriteFile(ConfigDirectoryPath + cube, std::ofstream::app);	
 		WriteFile<<"DNF"<<"\n";
+		WriteFile.close();
 
 		std::cout<<"\033["<<NumberOfRows/2+2<<";0f"<<"\033[2K";
 		

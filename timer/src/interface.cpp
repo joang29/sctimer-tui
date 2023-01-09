@@ -100,19 +100,21 @@ void interface(std::string options){
 		ActualInterface = "settings";
 
 		int ChosenOption = ReturnChosenOption();
-		std::string MessageSettingsArray[5];
+		std::string MessageSettingsArray[6];
 		
-		std::array<std::string, 5> SettingsArray = InitializeSettingsArray();
+		std::array<std::string, 6> SettingsArray = InitializeSettingsArray();
 	
-		MessageSettingsArray[0] = "[\033[" + SettingsArray[0] + "mﱢ" + "\033[0m" + "] Timer color when you do your PB";
-		MessageSettingsArray[1] = "[\033[" + SettingsArray[1] + "mﱢ" + "\033[0m" + "] Timer color at the end of the solve";
-		MessageSettingsArray[2] = "[\033[" + SettingsArray[2] + "mﱢ" + "\033[0m" + "] Timer color during normal solve";
-		MessageSettingsArray[3] = SettingsArray[3] == "true" ? "[X] Show keys" :  "[ ] Show keys";
-		MessageSettingsArray[4] = SettingsArray[4] == "true" ? "[X] Inspection time" :  "[ ] Inspection time"; 
+		MessageSettingsArray[0] = "[" + SettingsArray[0] + "]" + " Cube"; 
+		MessageSettingsArray[1] = "[\033[" + SettingsArray[1] + "mﱢ" + "\033[0m" + "] Timer color when you do your PB";
+		MessageSettingsArray[2] = "[\033[" + SettingsArray[2] + "mﱢ" + "\033[0m" + "] Timer color at the end of the solve";
+		MessageSettingsArray[3] = "[\033[" + SettingsArray[3] + "mﱢ" + "\033[0m" + "] Timer color during normal solve";
+		MessageSettingsArray[4] = SettingsArray[4] == "true" ? "[X] Show keys" :  "[ ] Show keys";
+		MessageSettingsArray[5] = SettingsArray[5] == "true" ? "[X] Inspection time" :  "[ ] Inspection time"; 
 		
 		std::cout<<"\033[8;0f";
 
-		for(int i = 0; i<=4; i++) 
+		for(int i = 0; i<=5; i++) 
+		//	std::cout<<SettingsArray[i]<<" ";
 			ChosenOption == i ? std::cout<<"\r\t      > "<<MessageSettingsArray[i]<<std::endl : std::cout<<"\r\t\t"<<MessageSettingsArray[i]<<std::endl;
 		
 		std::cout<<"\033["<<NumberOfRows<<";0f";

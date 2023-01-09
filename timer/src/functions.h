@@ -24,9 +24,9 @@ void ChangeChosenOption(char);
 int ReturnChosenOption();
 std::string ReturnShowKeysValue();
 std::string ReturnInspectionTimeValue();
-std::array<std::string,5> InitializeSettingsArray();
+std::array<std::string,6> InitializeSettingsArray();
 std::array<std::string, 3> ReturnColors();
-
+std::string ReturnCube();
 
 //statics.cpp
 std::array<double,4> SumAverage();

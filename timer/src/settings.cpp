@@ -4,20 +4,23 @@
 #include<array>
 #include "functions.h"
 
+#include<iostream>
+
 int ReturnChosenOption();
 void ChangeValueOfSettings();
 void ChangeChosenOption(char);
 std::array<std::string,3> ReturnColors();
-std::array<std::string,5> InitializeSettingsArray();
+std::array<std::string,6> InitializeSettingsArray();
 std::string ReturnShowKeysValue();
 std::string ReturnInspectionTimeValue();
+std::string ReturnCube();
 
 int ChosenOption = 0;
 
-std::array<std::string, 5> SettingsArray;
+std::array<std::string, 6> SettingsArray;
 std::string colors[5] = {"94", "93", "92", "95", "97"};
 
-std::array<std::string, 5> InitializeSettingsArray(){
+std::array<std::string, 6> InitializeSettingsArray(){
 	#ifdef _WIN32
 		std::string ConfigDirectoryPath = std::string(getenv("APPDATA")) + "/../Local/sctimer-cli/";
 	#elif __linux__
@@ -30,13 +33,17 @@ std::array<std::string, 5> InitializeSettingsArray(){
 	
 	if(!SettingsFile.is_open()){
 		std::ofstream CreateSettingsFile(ConfigDirectoryPath + "timer.conf", std::ofstream::app);
-		CreateSettingsFile<<"PB =            95\nNormalSolve =   94\nDuringSolve =   97\nShowKeys =      true\nInspection =    false";
+		CreateSettingsFile<<"Cube =          3x3\nPB =            95\nNormalSolve =   94\nDuringSolve =   97\nShowKeys =      true\nInspection =    false";
+		
 		CreateSettingsFile.close();
 		SettingsFile.close();
-		return {"95", "94", "97", "true", "false"};		
+		
+		SettingsArray = {"3x3", "95", "94", "97", "true", "false"};
+
+		return SettingsArray;		
 	}
 	
-	while(SettingsFile.eof()==0 && i<=4){
+	while(SettingsFile.eof()==0 && i<=5){
 		getline(SettingsFile, SettingsArray[i]);	
 		SettingsArray[i] = SettingsArray[i].substr(16);
 		i++;
@@ -54,39 +61,33 @@ void ChangeValueOfSettings(){
 	#endif
 
 	int NumberLine = 0;
-
+	std::string line;
+	
 	std::ifstream ReadOldFile(ConfigDirectoryPath + "timer.conf");
 	std::ofstream WriteNewFile(ConfigDirectoryPath + "ProvisionalTimer.conf");
-
-	if(ChosenOption > 2){
-		std::string line;
 	
+	if(ChosenOption == 0){
+		while(ReadOldFile.eof()==0){
+			getline(ReadOldFile, line);
+			if(NumberLine == 0)
+				line.find("3x3") != std::string::npos ? line.replace(line.find("3x3"), line.length(), "2x2") : line.replace(line.find("2x2"), line.length(), "3x3");
+			if(line != "") WriteNewFile<<line<<"\n";
+			NumberLine++;
+		}
+	}
+	else if(ChosenOption > 3){	
 		while(ReadOldFile.eof()==0){
 			getline(ReadOldFile, line);
 
 			if(NumberLine == ChosenOption){
-				if(line.find("true") != std::string::npos) line.replace(line.find("true"), line.length(), "false"); 
-				else line.replace(line.find("false"), line.length(), "true");
+				line.find("true") != std::string::npos ? line.replace(line.find("true"), line.length(), "false") : 
+									 line.replace(line.find("false"), line.length(), "true");
 			}
 			if(line != "") WriteNewFile<<line<<"\n";
 			NumberLine++;
 		}
-		ReadOldFile.close();
-		WriteNewFile.close();
-
-		#ifdef _WIN32
-			remove((ConfigDirectoryPath + "timer.conf").c_str());
-			rename((ConfigDirectoryPath + "ProvisionalTimer.conf").c_str(), (ConfigDirectoryPath + "timer.conf").c_str());
-	
-		#elif __linux__
-			rename((ConfigDirectoryPath + "ProvisionalTimer.conf").c_str(), (ConfigDirectoryPath + "timer.conf").c_str());
-		#endif
-		
-		interface("settings");
 	}
-	else if(ChosenOption <= 2){
-		std::string line;
-	
+	else if(ChosenOption > 0 && ChosenOption <= 3){
 		while(ReadOldFile.eof()==0){
 			getline(ReadOldFile, line);
 
@@ -99,9 +100,10 @@ void ChangeValueOfSettings(){
 			if(line != "") WriteNewFile<<line<<"\n";
 			NumberLine++;	
 		}
+	}
 		
 		ReadOldFile.close();
-		WriteNewFile.close();
+		WriteNewFile.close();	
 
 		#ifdef _WIN32
 			remove((ConfigDirectoryPath + "timer.conf").c_str());
@@ -109,13 +111,14 @@ void ChangeValueOfSettings(){
 	
 		#elif __linux__
 			rename((ConfigDirectoryPath + "ProvisionalTimer.conf").c_str(), (ConfigDirectoryPath + "timer.conf").c_str());
-		#endif	
-	}
+		#endif
+
+		interface("settings");
 }
 
 void ChangeChosenOption(char PlusOrMinus){
 	switch(PlusOrMinus){
-		case '+': if(ChosenOption < 4) ChosenOption++;
+		case '+': if(ChosenOption < 5) ChosenOption++;
 		break;
 
 		case '-': if(ChosenOption > 0) ChosenOption--;
@@ -123,19 +126,25 @@ void ChangeChosenOption(char PlusOrMinus){
 	}
 }
 
-std::array<std::string,3> ReturnColors(){
+
+std::string ReturnCube(){
 	if(SettingsArray[0] == "") InitializeSettingsArray();
-	return {SettingsArray[0], SettingsArray[1], SettingsArray[2]};
+	return SettingsArray[0];
+}
+
+std::array<std::string,3> ReturnColors(){
+	if(SettingsArray[1] == "") InitializeSettingsArray();
+	return {SettingsArray[1], SettingsArray[2], SettingsArray[3]};
 }
 
 std::string ReturnShowKeysValue(){
-	if(SettingsArray[0] == "") InitializeSettingsArray();
-	return SettingsArray[3];
+	if(SettingsArray[4] == "") InitializeSettingsArray();
+	return SettingsArray[4];
 }
 
 std::string ReturnInspectionTimeValue(){
-	if(SettingsArray[0] == "") InitializeSettingsArray();
-	return SettingsArray[4];
+	if(SettingsArray[5] == "") InitializeSettingsArray();
+	return SettingsArray[5];
 }
 
 int ReturnChosenOption(){
