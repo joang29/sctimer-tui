@@ -19,9 +19,10 @@ int main(){
 		std::string appdata = getenv("APPDATA");
     		if(stat((appdata + "/../Local/sctimer-cli").c_str(), &CheckIfDirExists) != 0){
 	
-		mkdir((appdata + "/../Local/sctimer-cli").c_str());
-		mkdir((appdata + "/../Local/sctimer-cli/2x2").c_str());
-		mkdir((appdata + "/../Local/sctimer-cli/3x3").c_str());
+			mkdir((appdata + "/../Local/sctimer-cli").c_str());
+			mkdir((appdata + "/../Local/sctimer-cli/2x2").c_str());
+			mkdir((appdata + "/../Local/sctimer-cli/3x3").c_str());
+		}
 	#endif
 	
 	interface("timer");
