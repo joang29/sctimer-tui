@@ -2,6 +2,11 @@
 
 ![image](https://user-images.githubusercontent.com/85022759/210436880-16620b1f-d033-4988-94f6-4f6f27a36b9c.png)
 
+## Installation
+To install sctimer run:
+```
+sudo make install
+```
 ## Dependencies  🗃️
 - [Nerd Font](https://github.com/ryanoasis/nerd-fonts/tree/master/patched-fonts/Iosevka)
 
